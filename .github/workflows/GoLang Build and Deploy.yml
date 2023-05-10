@@ -1,6 +1,6 @@
 on: workflow_dispatch
 
-name: Go_containerapp_deployment
+name: GoLang_Containerapp_Deployment
 
 jobs:
   build:
@@ -18,13 +18,13 @@ jobs:
     
     - uses: azure/docker-login@v1
       with:
-        login-server: testregistry4572.azurecr.io
+        login-server: acrsampleregistry.azurecr.io
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
     
     - run: |
-        docker build . -t testregistry4572.azurecr.io/gooosampleapp:${{ github.sha }}
-        docker push testregistry4572.azurecr.io/gooosampleapp:${{ github.sha }} 
+        docker build . -t acrsampleregistry.azurecr.io/gocontainerapp:${{ github.sha }}
+        docker push acrsampleregistry.azurecr.io/gocontainerapp:${{ github.sha }} 
   deploy:
       runs-on: ubuntu-latest
       needs: build
@@ -44,11 +44,11 @@ jobs:
           az extension add -n containerapp
           
           az containerapp create \
-                --name testgoooapp \
-                --resource-group serviceprinciple \
-                --environment managedEnvironment-serviceprincipl-9710 \
-                --image testregistry4572.azurecr.io/gooosampleapp:${{ github.sha }} \
-                --registry-server testregistry4572.azurecr.io \
+                --name testgoapp \
+                --resource-group cicd_templates \
+                --environment container-env \
+                --image acrsampleregistry.azurecr.io/gocontainerapp:${{ github.sha }} \
+                --registry-server acrsampleregistry.azurecr.io \
                 --registry-username ${{ secrets.REGISTRY_USERNAME }} \
                 --registry-password ${{ secrets.REGISTRY_PASSWORD }}\
                 --target-port 80 \
